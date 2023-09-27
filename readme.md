@@ -1,6 +1,6 @@
 # Droplet
 ## About
-Droplet is a simple n-body gravitation simulator.  The simulation is rendered using Pygame.
+Droplet is a simple n-body gravitation simulator.
 
 ## Goals
 - Learn about n-body simulations
