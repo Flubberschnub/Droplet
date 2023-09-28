@@ -1,5 +1,6 @@
 import math
 import constants
+import random
 
 # Global constants
 global G
@@ -54,11 +55,12 @@ class Acceleration(Vector):
 
 ## Object class: basic object with size, position, and velocity
 class Object:
-    def __init__(self, size, position, velocity, name="Object"):
+    def __init__(self, size, position, velocity, name="Object", color=(255, 255, 255)):
         self.size = size
         self.position = position
         self.velocity = velocity
         self.name = name
+        self.color = color
     
     def update(self):
         self.position += self.velocity * TIME
@@ -71,8 +73,8 @@ class Object:
 
 ## Object subclass: massive object with point gravity
 class MassiveObject(Object):
-    def __init__(self, size, position, velocity, mass, name="Massive Object"):
-        super().__init__(size, position, velocity, name)
+    def __init__(self, size, position, velocity, mass, name="Massive Object", color=(255, 0, 0)):
+        super().__init__(size, position, velocity, name, color)
         self.mass = mass
 
     def gravity(self, obj):
@@ -87,8 +89,14 @@ class MassiveObject(Object):
 
 
 
-# Global variables
-objects = [MassiveObject(6.96*(10**8), Position(0, 0), Velocity(0, 0), 2*(10**30), "Alpha Centauri A"), MassiveObject(4.91*(10**8), Position(3.518*(10**12), 0), Velocity(0, 0), 1.6*(10**30), "Alpha Centauri B"), MassiveObject(7.4*(10**7), Position(1.904*(10**12), 0.401*(10**12)), Velocity(-5000, 0), 2.39*(10**29), "Proxima Centauri"), MassiveObject(7*(10**7), Position(2*(10**12), 1*(10**12)), Velocity(0, 0), 5.97*(10**24), "Trisolaris")]
+# Initial objects (for testing)
+# Randomized values
+ACA = MassiveObject(6.96*(10**8), Position(random.uniform(-5*(10**12), 5*(10**12)), random.uniform(-5*(10**12), 5*(10**12))), Velocity(random.uniform(-5000, 5000), random.uniform(-5000, 5000)), 2*(10**30), "Alpha Centauri A")
+ACB = MassiveObject(4.91*(10**8), Position(random.uniform(-5*(10**12), 5*(10**12)), random.uniform(-5*(10**12), 5*(10**12))), Velocity(random.uniform(-5000, 5000), random.uniform(-5000, 5000)), 1.6*(10**30), "Alpha Centauri B")
+PC = MassiveObject(7.4*(10**7), Position(random.uniform(-5*(10**12), 5*(10**12)), random.uniform(-5*(10**12), 5*(10**12))), Velocity(random.uniform(-5000, 5000), random.uniform(-5000, 5000)), 2.39*(10**29), "Proxima Centauri")
+TS = MassiveObject(7*(10**7), Position(random.uniform(-5*(10**12), 5*(10**12)), random.uniform(-5*(10**12), 5*(10**12))), Velocity(random.uniform(-5000, 5000), random.uniform(-5000, 5000)), 5.97*(10**24), "Trisolaris")
+
+objects = [ACA, ACB, PC, TS]
 
 
 
@@ -97,6 +105,7 @@ def tick():
     # Global constants
     global G
     global TIME
+    global EPSILON
     G = constants.G
     TIME = constants.TIME
     EPSILON = TIME * 500000

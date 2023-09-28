@@ -21,7 +21,7 @@ while True:
     tick.tick()
     canvas.fill((0, 0, 0))
     for obj in engine.objects:
-        pygame.draw.circle(canvas, (255, 0, 0), (int(obj.position.x*SCALE + 1920 + scroll[0]), int(obj.position.y*SCALE + 1080 + scroll[1])), int(obj.size*SCALE*160))
+        pygame.draw.circle(canvas, obj.color, (int(obj.position.x*SCALE + 1920 + scroll[0]), int(obj.position.y*SCALE + 1080 + scroll[1])), int(obj.size*SCALE*160))
         # label name
         font = pygame.font.SysFont("monospace", 15)
         label = font.render(obj.name, 1, (255, 255, 255))
