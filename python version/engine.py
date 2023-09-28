@@ -61,9 +61,12 @@ class Object:
         self.velocity = velocity
         self.name = name
         self.color = color
+        self.trail = Trail(self.position, self.size*2, (self.color[0], self.color[1], self.color[2]+10))
     
     def update(self):
         self.position += self.velocity * TIME
+        self.trail.position = self.position
+        self.trail.update()
     
     def accelerateToward(self, position, magnitude):
         angle = math.atan2(position.y - self.position.y, position.x - self.position.x)
@@ -88,13 +91,27 @@ class MassiveObject(Object):
         super().update()
 
 
+## Trail Class: trail of an object
+class Trail:
+    def __init__(self, pos, size, color=(255, 255, 255)):
+        self.position = pos
+        self.color = color
+        self.size = size
+        self.length = self.size * 0.0000005
+        self.trail = []
+    
+    def update(self):
+        self.trail.append(self.position)
+        if len(self.trail) > self.length:
+            self.trail.pop(0)
+
 
 # Initial objects (for testing)
 # Randomized values
-ACA = MassiveObject(6.96*(10**8), Position(random.uniform(-5*(10**12), 5*(10**12)), random.uniform(-5*(10**12), 5*(10**12))), Velocity(random.uniform(-5000, 5000), random.uniform(-5000, 5000)), 2*(10**30), "Alpha Centauri A")
-ACB = MassiveObject(4.91*(10**8), Position(random.uniform(-5*(10**12), 5*(10**12)), random.uniform(-5*(10**12), 5*(10**12))), Velocity(random.uniform(-5000, 5000), random.uniform(-5000, 5000)), 1.6*(10**30), "Alpha Centauri B")
-PC = MassiveObject(7.4*(10**7), Position(random.uniform(-5*(10**12), 5*(10**12)), random.uniform(-5*(10**12), 5*(10**12))), Velocity(random.uniform(-5000, 5000), random.uniform(-5000, 5000)), 2.39*(10**29), "Proxima Centauri")
-TS = MassiveObject(7*(10**7), Position(random.uniform(-5*(10**12), 5*(10**12)), random.uniform(-5*(10**12), 5*(10**12))), Velocity(random.uniform(-5000, 5000), random.uniform(-5000, 5000)), 5.97*(10**24), "Trisolaris")
+ACA = MassiveObject(6.96*(10**8), Position(random.uniform(-3.5*(10**12), 3.5*(10**12)), random.uniform(-3.5*(10**12), 3.5*(10**12))), Velocity(random.uniform(-5000, 5000), random.uniform(-5000, 5000)), 2*(10**30), "Alpha Centauri A")
+ACB = MassiveObject(4.91*(10**8), Position(random.uniform(-3.5*(10**12), 3.5*(10**12)), random.uniform(-3.5*(10**12), 3.5*(10**12))), Velocity(random.uniform(-5000, 5000), random.uniform(-5000, 5000)), 1.6*(10**30), "Alpha Centauri B", (255, 100, 40))
+PC = MassiveObject(7.4*(10**7), Position(random.uniform(-3.5*(10**12), 3.5*(10**12)), random.uniform(-3.5*(10**12), 3.5*(10**12))), Velocity(random.uniform(-5000, 5000), random.uniform(-5000, 5000)), 2.39*(10**29), "Proxima Centauri", (255, 194, 77))
+TS = MassiveObject(7*(10**7), Position(random.uniform(-3.5*(10**12), 3.5*(10**12)), random.uniform(-3.5*(10**12), 3.5*(10**12))), Velocity(random.uniform(-5000, 5000), random.uniform(-5000, 5000)), 5.97*(10**24), "Trisolaris", (77, 255, 194))
 
 objects = [ACA, ACB, PC, TS]
 
