@@ -21,24 +21,42 @@ def drawTrail(objTrail):
     for i in range(len(objTrail.trail)-1):
         pygame.draw.line(canvas, (objTrail.color[0] - (objTrail.color[0]*(1-(i/len(objTrail.trail)))), objTrail.color[1] - (objTrail.color[1]*(1-(i/len(objTrail.trail)))), objTrail.color[2] - (objTrail.color[2]*(1-(i/len(objTrail.trail))))), (int(objTrail.trail[i].x*SCALE + (screenSize[0]/2) + scroll[0]), int(objTrail.trail[i].y*SCALE + (screenSize[1]/2) + scroll[1])), (int(objTrail.trail[i+1].x*SCALE + (screenSize[0]/2) + scroll[0]), int(objTrail.trail[i+1].y*SCALE + (screenSize[1]/2) + scroll[1])), int(objTrail.size*SCALE*scalefactor*(i/len(objTrail.trail))))
 
+def clampInt(num, low, high):
+    return max(low, min(num, high))
+
 scroll = [0, 0]
+lockedObject = None
 while True:
+    clickPos = None
     for event in pygame.event.get():
+
+        if event.type == pygame.MOUSEBUTTONUP:
+            clickPos = pygame.mouse.get_pos()
+
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
     tick.tick()
+    if lockedObject != None:
+        scroll[0] = -(lockedObject.position.x*SCALE)
+        scroll[1] = -(lockedObject.position.y*SCALE)
     canvas.fill((0, 0, 0))
     for obj in engine.objects:
         # draw trail
         drawTrail(obj.trail)
         # draw object
-        pygame.gfxdraw.filled_circle(canvas, int(obj.position.x*SCALE + (screenSize[0]/2) + scroll[0]), int(obj.position.y*SCALE + (screenSize[1]/2) + scroll[1]), int(obj.size*SCALE*scalefactor), obj.color)
-        pygame.gfxdraw.aacircle(canvas, int(obj.position.x*SCALE + (screenSize[0]/2) + scroll[0]), int(obj.position.y*SCALE + (screenSize[1]/2) + scroll[1]), int(obj.size*SCALE*scalefactor), obj.color)
+        pygame.gfxdraw.filled_circle(canvas, clampInt(int(obj.position.x*SCALE + (screenSize[0]/2) + scroll[0]), -32767, 32767), clampInt(int(obj.position.y*SCALE + (screenSize[1]/2) + scroll[1]), -32767, 32767), int(obj.size*SCALE*scalefactor), obj.color)
+        pygame.gfxdraw.aacircle(canvas, clampInt(int(obj.position.x*SCALE + (screenSize[0]/2) + scroll[0]), -32767, 32767), clampInt(int(obj.position.y*SCALE + (screenSize[1]/2) + scroll[1]), -32767, 32767), int(obj.size*SCALE*scalefactor), obj.color)
         # label name
         font = pygame.font.SysFont("monospace", 15)
         label = font.render(obj.name, 1, (255, 255, 255))
         canvas.blit(label, (int(obj.position.x*SCALE + (screenSize[0]/2) + scroll[0]), int(obj.position.y*SCALE + (screenSize[1]/2) + scroll[1] - 20)))
+        # if clicked, lock object
+        if clickPos != None:
+            if (obj.position.x*SCALE + (screenSize[0]/2) + scroll[0] - clickPos[0])**2 + (obj.position.y*SCALE + (screenSize[1]/2) + scroll[1] - clickPos[1])**2 <= (obj.size*SCALE*scalefactor)**2 + 20:
+                lockedObject = obj
+        if obj is lockedObject:
+            pygame.draw.circle(canvas, (255, 255, 255), (int(obj.position.x*SCALE + (screenSize[0]/2) + scroll[0]), int(obj.position.y*SCALE + (screenSize[1]/2) + scroll[1])), int(obj.size*SCALE*scalefactor) + 20, 1)
     # display time
     currentTime += constants.TIME
     font = pygame.font.SysFont("monospace", 15)
@@ -78,6 +96,9 @@ while True:
         constants.setTime(constants.TIME / 1.1)
     if keys[pygame.K_RIGHT]:
         constants.setTime(constants.TIME * 1.1)
+    # CTRL to unlock
+    if keys[pygame.K_LCTRL]:
+        lockedObject = None
     # ESC to quit
     if keys[pygame.K_ESCAPE]:
         pygame.quit()
