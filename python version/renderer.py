@@ -18,8 +18,18 @@ screenSize = pyautogui.size()
 canvas = pygame.display.set_mode(screenSize)
 
 def drawTrail(objTrail):
+    """
+    Draw the trail of an object on the canvas.
+
+    Args:
+        objTrail: The object trail to be drawn.
+
+    Returns:
+        None
+    """
     for i in range(len(objTrail.trail)-1):
         pygame.draw.line(canvas, (objTrail.color[0] - (objTrail.color[0]*(1-(i/len(objTrail.trail)))), objTrail.color[1] - (objTrail.color[1]*(1-(i/len(objTrail.trail)))), objTrail.color[2] - (objTrail.color[2]*(1-(i/len(objTrail.trail))))), (int(objTrail.trail[i].x*SCALE + (screenSize[0]/2) + scroll[0]), int(objTrail.trail[i].y*SCALE + (screenSize[1]/2) + scroll[1])), (int(objTrail.trail[i+1].x*SCALE + (screenSize[0]/2) + scroll[0]), int(objTrail.trail[i+1].y*SCALE + (screenSize[1]/2) + scroll[1])), int(objTrail.size*SCALE*scalefactor*(i/len(objTrail.trail))))
+
 
 def clampInt(num, low, high):
     return max(low, min(num, high))
@@ -42,15 +52,16 @@ while True:
         scroll[1] = -(lockedObject.position.y*SCALE)
     canvas.fill((0, 0, 0))
     for obj in engine.objects:
-        # draw trail
-        drawTrail(obj.trail)
-        # draw object
-        pygame.gfxdraw.filled_circle(canvas, clampInt(int(obj.position.x*SCALE + (screenSize[0]/2) + scroll[0]), -32767, 32767), clampInt(int(obj.position.y*SCALE + (screenSize[1]/2) + scroll[1]), -32767, 32767), int(obj.size*SCALE*scalefactor), obj.color)
-        pygame.gfxdraw.aacircle(canvas, clampInt(int(obj.position.x*SCALE + (screenSize[0]/2) + scroll[0]), -32767, 32767), clampInt(int(obj.position.y*SCALE + (screenSize[1]/2) + scroll[1]), -32767, 32767), int(obj.size*SCALE*scalefactor), obj.color)
-        # label name
-        font = pygame.font.SysFont("monospace", 15)
-        label = font.render(obj.name, 1, (255, 255, 255))
-        canvas.blit(label, (int(obj.position.x*SCALE + (screenSize[0]/2) + scroll[0]), int(obj.position.y*SCALE + (screenSize[1]/2) + scroll[1] - 20)))
+        # draw object if on screen
+        if -32767 <= int(obj.position.x*SCALE + (screenSize[0]/2) + scroll[0]) <= 32767 and -32767 <= int(obj.position.y*SCALE + (screenSize[1]/2) + scroll[1]) <= 32767:
+            # draw trail
+            drawTrail(obj.trail)
+            pygame.gfxdraw.filled_circle(canvas, clampInt(int(obj.position.x*SCALE + (screenSize[0]/2) + scroll[0]), -32767, 32767), clampInt(int(obj.position.y*SCALE + (screenSize[1]/2) + scroll[1]), -32767, 32767), clampInt(int(obj.size*SCALE*scalefactor), -32767, 32767), obj.color)
+            pygame.gfxdraw.aacircle(canvas, clampInt(int(obj.position.x*SCALE + (screenSize[0]/2) + scroll[0]), -32767, 32767), clampInt(int(obj.position.y*SCALE + (screenSize[1]/2) + scroll[1]), -32767, 32767), clampInt(int(obj.size*SCALE*scalefactor), -32767, 32767), obj.color)
+            # label name
+            font = pygame.font.SysFont("monospace", 15)
+            label = font.render(obj.name, 1, (255, 255, 255))
+            canvas.blit(label, (int(obj.position.x*SCALE + (screenSize[0]/2) + scroll[0]), int(obj.position.y*SCALE + (screenSize[1]/2) + scroll[1] - 20)))
         # if clicked, lock object
         if clickPos != None:
             if (obj.position.x*SCALE + (screenSize[0]/2) + scroll[0] - clickPos[0])**2 + (obj.position.y*SCALE + (screenSize[1]/2) + scroll[1] - clickPos[1])**2 <= (obj.size*SCALE*scalefactor)**2 + 20:

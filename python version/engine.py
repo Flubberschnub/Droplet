@@ -18,7 +18,7 @@ def smoothstep(x, x_min=0, x_max=1, N=1):
     return result
 
 # Initial objects (for testing)
-objects = presets.objects_Flennestra
+objects = presets.objects_Sol
 
 global massDensity
 massDensity = 0
