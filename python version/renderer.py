@@ -9,7 +9,7 @@ import pyautogui
 
 FPS = 120
 SCALE = constants.SCALE
-scalefactor = 1
+scalefactor = 50
 
 currentTime = 0
 
@@ -67,7 +67,7 @@ while True:
             if (obj.position.x*SCALE + (screenSize[0]/2) + scroll[0] - clickPos[0])**2 + (obj.position.y*SCALE + (screenSize[1]/2) + scroll[1] - clickPos[1])**2 <= (obj.size*SCALE*scalefactor)**2 + 20:
                 lockedObject = obj
         if obj is lockedObject:
-            pygame.draw.circle(canvas, (255, 255, 255), (int(obj.position.x*SCALE + (screenSize[0]/2) + scroll[0]), int(obj.position.y*SCALE + (screenSize[1]/2) + scroll[1])), int(obj.size*SCALE*scalefactor) + 20, 1)
+            pygame.gfxdraw.aacircle(canvas, int(obj.position.x*SCALE + (screenSize[0]/2) + scroll[0]), int(obj.position.y*SCALE + (screenSize[1]/2) + scroll[1]), 20, (255, 255, 255))
     # display time
     currentTime += constants.TIME
     font = pygame.font.SysFont("monospace", 15)

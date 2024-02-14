@@ -3,6 +3,7 @@ import constants
 import random
 import presets
 import definitions
+import barneshut
 import numpy as np
 from scipy.special import comb
 
@@ -24,6 +25,12 @@ global massDensity
 massDensity = 0
 
 def tick():
+    #This function is called every frame
+    
+    # Create quadtree
+    quadtree = barneshut.QuadNode(0, 0, 3*(10**20), 3*(10**20))
+    for obj in objects:
+        quadtree.insert(obj)
 
     charLength = 0
 
