@@ -6,12 +6,14 @@ import tick
 import engine
 import constants
 import pyautogui
+import barneshut
 
 FPS = 120
 SCALE = constants.SCALE
 scalefactor = 50
 
 currentTime = 0
+visualizePartitioning = True
 
 pygame.init()
 screenSize = pyautogui.size()
@@ -34,6 +36,22 @@ def drawTrail(objTrail):
 def clampInt(num, low, high):
     return max(low, min(num, high))
 
+def drawQuad(quad):
+    if quad.children[0] != None:
+        drawQuad(quad.children[0])
+    if quad.children[1] != None:
+        drawQuad(quad.children[1])
+    if quad.children[2] != None:
+        drawQuad(quad.children[2])
+    if quad.children[3] != None:
+        drawQuad(quad.children[3])
+    # Only draw if on screen and not too small
+    if -32767 <= int(quad.x*SCALE + (screenSize[0]/2) + scroll[0]) <= 32767 and -32767 <= int(quad.y*SCALE + (screenSize[1]/2) + scroll[1]) <= 32767 and quad.width*SCALE > 1:
+        pygame.draw.rect(canvas, (0, 255, 0), (int((quad.x - quad.width/2)*SCALE + (screenSize[0]/2) + scroll[0]), int((quad.y - quad.height/2)*SCALE + (screenSize[1]/2) + scroll[1]), int(quad.width*SCALE), int(quad.height*SCALE)), 2)
+        # draw center of mass if cursor is inside quad
+        if ((quad.x*SCALE + (screenSize[0]/2) + scroll[0] - pygame.mouse.get_pos()[0])**2 + (quad.y*SCALE + (screenSize[1]/2) + scroll[1] - pygame.mouse.get_pos()[1])**2 <= 100):
+            pygame.gfxdraw.filled_circle(canvas, int(quad.center_of_mass_x*SCALE + (screenSize[0]/2) + scroll[0]), int(quad.center_of_mass_y*SCALE + (screenSize[1]/2) + scroll[1]), int(quad.mass**0.03)*2, (255, 0, 0))
+
 scroll = [0, 0]
 lockedObject = None
 while True:
@@ -51,6 +69,11 @@ while True:
         scroll[0] = -(lockedObject.position.x*SCALE)
         scroll[1] = -(lockedObject.position.y*SCALE)
     canvas.fill((0, 0, 0))
+
+    #Visualize Partitioning
+    if visualizePartitioning:
+        drawQuad(engine.quadtree)
+
     for obj in engine.objects:
         # draw object if on screen
         if -32767 <= int(obj.position.x*SCALE + (screenSize[0]/2) + scroll[0]) <= 32767 and -32767 <= int(obj.position.y*SCALE + (screenSize[1]/2) + scroll[1]) <= 32767:

@@ -1,6 +1,7 @@
 import math
 import constants
 import random
+import barneshut
 
 
 ## 2D Vector Class
@@ -20,6 +21,15 @@ class Vector:
             return type(self)(self.x * other.x, self.y * other.y)
         else:
             return type(self)(self.x * other, self.y * other)
+        
+    def normalized(self):
+        # Convert to unit vector
+        result = type(self)(self.x, self.y)
+        magnitude = self.getMagnitude()
+        if magnitude != 0:
+            result.x /= magnitude
+            result.y /= magnitude
+        return result
 
     def getMagnitude(self):
         return (self.x**2 + self.y**2)**0.5
@@ -61,11 +71,17 @@ class Object:
         self.trail.position = self.position
         self.trail.update()
     
+    # Accelerate toward a position with a given magnitude
     def accelerateToward(self, position, magnitude):
         angle = math.atan2(position.y - self.position.y, position.x - self.position.x)
         direction = (math.cos(angle), math.sin(angle))
         self.velocity.x += (Acceleration(direction, magnitude) * constants.TIME).x
         self.velocity.y += (Acceleration(direction, magnitude) * constants.TIME).y
+    
+    # Accelerate given a direction and magnitude
+    def accelerate(self, direction, magnitude):
+        self.velocity.x += (direction[0] * magnitude * constants.TIME)
+        self.velocity.y += (direction[1] * magnitude * constants.TIME)
 
 ## Object subclass: massive object with point gravity
 class MassiveObject(Object):
@@ -77,10 +93,12 @@ class MassiveObject(Object):
         r = (obj.position - self.position).getMagnitude()
         return constants.G*self.mass*obj.mass/((r**2) + (constants.EPSILON**2))
     
-    def update(self, objects):
-        for obj in objects:
+    def update(self, quadtree):
+        '''for obj in objects:
             if obj != self:
-                obj.accelerateToward(self.position,(self.gravity(obj)/obj.mass))
+                obj.accelerateToward(self.position,(self.gravity(obj)/obj.mass))'''
+        force = barneshut.getForce(self, quadtree)
+        self.accelerate(force[0], force[1]/self.mass)
         super().update()
 
 

@@ -34,3 +34,14 @@ FlennestraB = definitions.MassiveObject(6.96*(10**8), definitions.Position(rando
 FlennestraC = definitions.MassiveObject(6.96*(10**8), definitions.Position(random.uniform(-1.5*(10**11), 1.5*(10**11)), random.uniform(-1.5*(10**11), 1.5*(10**11))), definitions.Velocity(0, 0), 1.9891*(10**30), "Flennestra 34-C", (0, 255, 255))
 
 objects_Flennestra = [FlennestraA, FlennestraB, FlennestraC]
+
+
+## Randomized system
+# Initial objects (for testing)
+objects_Random = []
+numRandomObjects = 50
+for i in range(0, numRandomObjects):
+    # random position, velocity, mass, and name, color, and size
+    objects_Random.append(definitions.MassiveObject(random.uniform(1*(10**6), 1*(10**8)), definitions.Position(random.uniform(-3.5*(10**12), 3.5*(10**12)), random.uniform(-3.5*(10**12), 3.5*(10**12))), definitions.Velocity(random.uniform(-5000, 5000), random.uniform(-5000, 5000)), random.uniform(1*(10**22), 1*(10**28)), "Object " + str(i), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))))
+# Supermassive black hole
+objects_Random.append(definitions.MassiveObject(6.96*(10**8), definitions.Position(0, 0), definitions.Velocity(0, 0), 8.54*(10**36), "Supermassive Black Hole", (0, 50, 70)))

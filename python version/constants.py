@@ -2,11 +2,13 @@ global TIME
 global SCALE
 global G
 global EPSILON
+global THETA
 
 TIME = 1
 SCALE = 0.0000000001
 G = 6.67408*(10**-11)
 EPSILON = TIME * 500000
+THETA = 0.5
 
 def setTime(time):
     global TIME
