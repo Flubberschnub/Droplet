@@ -39,9 +39,26 @@ objects_Flennestra = [FlennestraA, FlennestraB, FlennestraC]
 ## Randomized system
 # Initial objects (for testing)
 objects_Random = []
-numRandomObjects = 50
+numRandomObjects = 200
+starProbability = 0.1
 for i in range(0, numRandomObjects):
-    # random position, velocity, mass, and name, color, and size
-    objects_Random.append(definitions.MassiveObject(random.uniform(1*(10**6), 1*(10**8)), definitions.Position(random.uniform(-3.5*(10**12), 3.5*(10**12)), random.uniform(-3.5*(10**12), 3.5*(10**12))), definitions.Velocity(random.uniform(-5000, 5000), random.uniform(-5000, 5000)), random.uniform(1*(10**22), 1*(10**28)), "Object " + str(i), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))))
+    if random.random() < starProbability:
+        # random position, velocity, mass, and name, color, and size
+        objects_Random.append(definitions.MassiveObject(random.uniform(1*(10**8), 1*(10**9)), definitions.Position(random.gauss(0, 3.5*(10**11.2)), random.gauss(0, 3.5*(10**11.2))), definitions.Velocity(random.uniform(-5000, 5000), random.uniform(-5000, 5000)), random.uniform(1*(10**28), 1*(10**30)), "Star " + str(i), (255, 255, 0)))
+    else:
+        # random position, velocity, mass, and name, color, and size
+        objects_Random.append(definitions.MassiveObject(random.uniform(1*(10**6), 1*(10**8)), definitions.Position(random.gauss(0, 3.5*(10**11.2)), random.gauss(0, 3.5*(10**11.2))), definitions.Velocity(random.uniform(-5000, 5000), random.uniform(-5000, 5000)), random.uniform(1*(10**22), 1*(10**26)), "Object " + str(i), (random.randint(0, 150), random.randint(0, 150), random.randint(0, 150))))
 # Supermassive black hole
-objects_Random.append(definitions.MassiveObject(6.96*(10**8), definitions.Position(0, 0), definitions.Velocity(0, 0), 8.54*(10**36), "Supermassive Black Hole", (0, 50, 70)))
+#objects_Random.append(definitions.MassiveObject(6.96*(10**8), definitions.Position(0, 0), definitions.Velocity(0, 0), 8.54*(10**36), "Supermassive Black Hole", (0, 50, 70)))
+
+
+## Spiral galaxy
+# Initial objects (for testing)
+objects_Spiral = []
+numSpiralObjects = 100
+# Supermassive black hole
+objects_Spiral.append(definitions.MassiveObject(6.96*(10**8), definitions.Position(0, 0), definitions.Velocity(0, 0), 8.54*(10**36), "Supermassive Black Hole", (0, 50, 70)))
+for i in range(0, numSpiralObjects):
+    # random position with a bias toward the center, velocity tangent to the circle, random mass, color, size, and name
+    objects_Spiral.append(definitions.MassiveObject(random.uniform(1*(10**6), 1*(10**8)), definitions.Position(0, random.gauss(0, 5*(10**20))), definitions.Velocity(random.uniform(-3.5*(10**12), 3.5*(10**12)), 0), random.uniform(1*(10**22), 1*(10**28)), "Object " + str(i), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))))
+    

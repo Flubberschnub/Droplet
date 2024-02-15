@@ -67,7 +67,10 @@ class Object:
         self.trail = Trail(self.position, self.size*2, (self.color[0], self.color[1], self.color[2]))
     
     def update(self):
-        self.position += self.velocity * constants.TIME
+        #leapfrog integration
+
+        self.position += self.velocity * constants.TIMESTEP
+
         self.trail.position = self.position
         self.trail.update()
     
@@ -88,6 +91,7 @@ class MassiveObject(Object):
     def __init__(self, size, position, velocity, mass, name="Massive Object", color=(255, 0, 0)):
         super().__init__(size, position, velocity, name, color)
         self.mass = mass
+        self.acceleration = Acceleration(0, 0)
 
     def gravity(self, obj):
         r = (obj.position - self.position).getMagnitude()
@@ -98,8 +102,15 @@ class MassiveObject(Object):
             if obj != self:
                 obj.accelerateToward(self.position,(self.gravity(obj)/obj.mass))'''
         force = barneshut.getForce(self, quadtree)
-        self.accelerate(force[0], force[1]/self.mass)
-        super().update()
+        accelerationFromForce = Acceleration((force[0][0]*force[1])/self.mass, (force[0][1]*force[1])/self.mass)
+        #self.accelerate(force[0], force[1]/self.mass)
+        
+        # leapfrog integration
+        self.velocity += (self.acceleration * (constants.TIMESTEP/2)) #kick
+        super().update() # drift
+        self.acceleration = accelerationFromForce #calc a_t+1
+        self.velocity += (self.acceleration * (constants.TIMESTEP/2)) #kick
+
 
 
 ## Trail Class: trail of an object

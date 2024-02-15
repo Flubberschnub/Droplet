@@ -46,7 +46,8 @@ def tick():
     for obj in objects:
         global massDensity
 
-        obj.update(quadtree)
+        for i in range(int(constants.TIME / constants.TIMESTEP)):
+            obj.update(quadtree)
         # Calculate average distance between particles and also mass density
         '''charLength = 0
         for obj2 in objects:
@@ -59,4 +60,5 @@ def tick():
 
     ## lesser epsilon is more accurate
     ## greater epsilon is more stable
-    constants.EPSILON = 5000000 * constants.TIME**2#(math.sqrt(constants.TIME+1)) * (massDensity**0.9)
+    constants.EPSILON = 50000000000#(math.sqrt(constants.TIME+1)) * (massDensity**0.9)
+    constants.TIMESTEP = constants.TIME / 1

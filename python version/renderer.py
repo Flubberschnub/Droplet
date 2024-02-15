@@ -7,13 +7,14 @@ import engine
 import constants
 import pyautogui
 import barneshut
+import preferences
 
 FPS = 120
 SCALE = constants.SCALE
-scalefactor = 50
+scalefactor = 1
 
 currentTime = 0
-visualizePartitioning = True
+system_last_time = time.time()
 
 pygame.init()
 screenSize = pyautogui.size()
@@ -29,6 +30,7 @@ def drawTrail(objTrail):
     Returns:
         None
     """
+    
     for i in range(len(objTrail.trail)-1):
         pygame.draw.line(canvas, (objTrail.color[0] - (objTrail.color[0]*(1-(i/len(objTrail.trail)))), objTrail.color[1] - (objTrail.color[1]*(1-(i/len(objTrail.trail)))), objTrail.color[2] - (objTrail.color[2]*(1-(i/len(objTrail.trail))))), (int(objTrail.trail[i].x*SCALE + (screenSize[0]/2) + scroll[0]), int(objTrail.trail[i].y*SCALE + (screenSize[1]/2) + scroll[1])), (int(objTrail.trail[i+1].x*SCALE + (screenSize[0]/2) + scroll[0]), int(objTrail.trail[i+1].y*SCALE + (screenSize[1]/2) + scroll[1])), int(objTrail.size*SCALE*scalefactor*(i/len(objTrail.trail))))
 
@@ -47,7 +49,7 @@ def drawQuad(quad):
         drawQuad(quad.children[3])
     # Only draw if on screen and not too small
     if -32767 <= int(quad.x*SCALE + (screenSize[0]/2) + scroll[0]) <= 32767 and -32767 <= int(quad.y*SCALE + (screenSize[1]/2) + scroll[1]) <= 32767 and quad.width*SCALE > 1:
-        pygame.draw.rect(canvas, (0, 255, 0), (int((quad.x - quad.width/2)*SCALE + (screenSize[0]/2) + scroll[0]), int((quad.y - quad.height/2)*SCALE + (screenSize[1]/2) + scroll[1]), int(quad.width*SCALE), int(quad.height*SCALE)), 2)
+        pygame.draw.rect(canvas, (0, 255, 0), (int((quad.x - quad.width/2)*SCALE + (screenSize[0]/2) + scroll[0]), int((quad.y - quad.height/2)*SCALE + (screenSize[1]/2) + scroll[1]), int(quad.width*SCALE), int(quad.height*SCALE)), 1)
         # draw center of mass if cursor is inside quad
         if ((quad.x*SCALE + (screenSize[0]/2) + scroll[0] - pygame.mouse.get_pos()[0])**2 + (quad.y*SCALE + (screenSize[1]/2) + scroll[1] - pygame.mouse.get_pos()[1])**2 <= 100):
             pygame.gfxdraw.filled_circle(canvas, int(quad.center_of_mass_x*SCALE + (screenSize[0]/2) + scroll[0]), int(quad.center_of_mass_y*SCALE + (screenSize[1]/2) + scroll[1]), int(quad.mass**0.03)*2, (255, 0, 0))
@@ -71,32 +73,53 @@ while True:
     canvas.fill((0, 0, 0))
 
     #Visualize Partitioning
-    if visualizePartitioning:
+    if preferences.visualizePartitioning:
         drawQuad(engine.quadtree)
 
     for obj in engine.objects:
         # draw object if on screen
         if -32767 <= int(obj.position.x*SCALE + (screenSize[0]/2) + scroll[0]) <= 32767 and -32767 <= int(obj.position.y*SCALE + (screenSize[1]/2) + scroll[1]) <= 32767:
             # draw trail
-            drawTrail(obj.trail)
-            pygame.gfxdraw.filled_circle(canvas, clampInt(int(obj.position.x*SCALE + (screenSize[0]/2) + scroll[0]), -32767, 32767), clampInt(int(obj.position.y*SCALE + (screenSize[1]/2) + scroll[1]), -32767, 32767), clampInt(int(obj.size*SCALE*scalefactor), -32767, 32767), obj.color)
-            pygame.gfxdraw.aacircle(canvas, clampInt(int(obj.position.x*SCALE + (screenSize[0]/2) + scroll[0]), -32767, 32767), clampInt(int(obj.position.y*SCALE + (screenSize[1]/2) + scroll[1]), -32767, 32767), clampInt(int(obj.size*SCALE*scalefactor), -32767, 32767), obj.color)
+            if preferences.displayTrails:
+                drawTrail(obj.trail)
+            if preferences.displayObjects:
+                pygame.gfxdraw.filled_circle(canvas, clampInt(int(obj.position.x*SCALE + (screenSize[0]/2) + scroll[0]), -32767, 32767), clampInt(int(obj.position.y*SCALE + (screenSize[1]/2) + scroll[1]), -32767, 32767), clampInt(int(obj.size*SCALE*scalefactor), -32767, 32767), obj.color)
+                pygame.gfxdraw.aacircle(canvas, clampInt(int(obj.position.x*SCALE + (screenSize[0]/2) + scroll[0]), -32767, 32767), clampInt(int(obj.position.y*SCALE + (screenSize[1]/2) + scroll[1]), -32767, 32767), clampInt(int(obj.size*SCALE*scalefactor), -32767, 32767), obj.color)
             # label name
-            font = pygame.font.SysFont("monospace", 15)
-            label = font.render(obj.name, 1, (255, 255, 255))
-            canvas.blit(label, (int(obj.position.x*SCALE + (screenSize[0]/2) + scroll[0]), int(obj.position.y*SCALE + (screenSize[1]/2) + scroll[1] - 20)))
+            if preferences.displayNames:
+                font = pygame.font.SysFont("monospace", 15)
+                label = font.render(obj.name, 1, (255, 255, 255))
+                canvas.blit(label, (int(obj.position.x*SCALE + (screenSize[0]/2) + scroll[0]), int(obj.position.y*SCALE + (screenSize[1]/2) + scroll[1] - 20)))
         # if clicked, lock object
         if clickPos != None:
             if (obj.position.x*SCALE + (screenSize[0]/2) + scroll[0] - clickPos[0])**2 + (obj.position.y*SCALE + (screenSize[1]/2) + scroll[1] - clickPos[1])**2 <= (obj.size*SCALE*scalefactor)**2 + 20:
                 lockedObject = obj
         if obj is lockedObject:
             pygame.gfxdraw.aacircle(canvas, int(obj.position.x*SCALE + (screenSize[0]/2) + scroll[0]), int(obj.position.y*SCALE + (screenSize[1]/2) + scroll[1]), 20, (255, 255, 255))
+            # display information about locked object on the right side of screen
+            font = pygame.font.SysFont("monospace", 15)
+            mainLabel = font.render(obj.name + ":", 1, (0, 255, 0))
+            massLabel = font.render("Mass: " + str(round(obj.mass, 2)) + " kg", 1, (0, 150, 0))
+            velocityLabel = font.render("Velocity: " + str(round(obj.velocity.getMagnitude(), 2)) + " m/s", 1, (0, 150, 0))
+            diameterLabel = font.render("Diameter: " + str(round(obj.size*2, 2)) + " m", 1, (0, 150, 0))
+            canvas.blit(mainLabel, ((screenSize[0]*8/10), (screenSize[1]*1/7 - 20)))
+            canvas.blit(massLabel, ((screenSize[0]*8/10), (screenSize[1]*1/7)))
+            canvas.blit(velocityLabel, ((screenSize[0]*8/10), (screenSize[1]*1/7 + 20)))
+            canvas.blit(diameterLabel, ((screenSize[0]*8/10), (screenSize[1]*1/7 + 40)))
     # display time
     currentTime += constants.TIME
     font = pygame.font.SysFont("monospace", 15)
     timeLabel = font.render("Year " + str(round(int(currentTime/31536000))) + ", Day " + str(round(int((currentTime % 31536000)/86400))) + ", Hour " + str(round(int(((currentTime % 31536000)%86400)/3600))), 1, (255, 255, 255))
     canvas.blit(timeLabel, ((screenSize[0]*1/10), (screenSize[1]*6/7)))
-    # display scale (1 AU)
+    # display scale (1 Gigameter) with label
+    font = pygame.font.SysFont("monospace", 15)
+    scaleLabel = font.render("1 Gigameter", 1, (255, 255, 255))
+    canvas.blit(scaleLabel, ((screenSize[0]*1/10), (screenSize[1]*6/7 - 40)))
+    pygame.draw.line(canvas, (255, 255, 255), ((screenSize[0]*1/10), (screenSize[1]*6/7) - 20), ((screenSize[0]*1/10) + 1*(10**9)*SCALE, (screenSize[1]*6/7) - 20), 1)
+    # display scale (1 AU) with label
+    font = pygame.font.SysFont("monospace", 15)
+    scaleLabel = font.render("1 AU", 1, (255, 255, 255))
+    canvas.blit(scaleLabel, ((screenSize[0]*1/10), (screenSize[1]*6/7 - 20)))
     pygame.draw.line(canvas, (255, 255, 255), ((screenSize[0]*1/10), (screenSize[1]*6/7)), ((screenSize[0]*1/10) + 1.496*(10**11)*SCALE, (screenSize[1]*6/7)), 1)
     # display mass density and epsilon
     font = pygame.font.SysFont("monospace", 15)
@@ -139,5 +162,9 @@ while True:
         sys.exit()
     pygame.display.update()
     time.sleep(1/FPS)
+    # debug print actual frames per second
+    print(1/(time.time() - system_last_time))
+    system_last_time = time.time()
+
 
 pygame.quit()
