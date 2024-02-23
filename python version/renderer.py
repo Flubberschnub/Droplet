@@ -30,7 +30,7 @@ def drawTrail(objTrail):
     Returns:
         None
     """
-    
+
     for i in range(len(objTrail.trail)-1):
         pygame.draw.line(canvas, (objTrail.color[0] - (objTrail.color[0]*(1-(i/len(objTrail.trail)))), objTrail.color[1] - (objTrail.color[1]*(1-(i/len(objTrail.trail)))), objTrail.color[2] - (objTrail.color[2]*(1-(i/len(objTrail.trail))))), (int(objTrail.trail[i].x*SCALE + (screenSize[0]/2) + scroll[0]), int(objTrail.trail[i].y*SCALE + (screenSize[1]/2) + scroll[1])), (int(objTrail.trail[i+1].x*SCALE + (screenSize[0]/2) + scroll[0]), int(objTrail.trail[i+1].y*SCALE + (screenSize[1]/2) + scroll[1])), int(objTrail.size*SCALE*scalefactor*(i/len(objTrail.trail))))
 
@@ -129,6 +129,11 @@ while True:
     canvas.blit(epsilonLabel, ((screenSize[0]*1/10), (screenSize[1]*1.5/7)))
     # display epsilon line
     pygame.draw.line(canvas, (255, 255, 255), ((screenSize[0]*1/10), (screenSize[1]*1.5/7)), ((screenSize[0]*1/10) + constants.EPSILON*SCALE, (screenSize[1]*1.5/7)), 1)
+    # display frames per second
+    font = pygame.font.SysFont("monospace", 15)
+    rightAdjustment = len(str(int(1/(time.time() - system_last_time))) + " FPS")
+    fpsLabel = font.render( str(int(1/(time.time() - system_last_time))) + " FPS", 1, (255, 255, 255))
+    canvas.blit(fpsLabel, ((screenSize[0]*9/10)-10*rightAdjustment, (screenSize[1]*6/7)))
     # move view screen
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w]:
@@ -164,6 +169,7 @@ while True:
     time.sleep(1/FPS)
     # debug print actual frames per second
     print(1/(time.time() - system_last_time))
+    # display frames per second
     system_last_time = time.time()
 
 
