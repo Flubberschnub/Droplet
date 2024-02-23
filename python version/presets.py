@@ -1,5 +1,8 @@
 import definitions
 import random
+import math
+import numpy as np
+from constants import G
 
 ## trisolaris preset
 # Initial objects (for testing)
@@ -57,8 +60,41 @@ for i in range(0, numRandomObjects):
 objects_Spiral = []
 numSpiralObjects = 100
 # Supermassive black hole
-objects_Spiral.append(definitions.MassiveObject(6.96*(10**8), definitions.Position(0, 0), definitions.Velocity(0, 0), 8.54*(10**36), "Supermassive Black Hole", (0, 50, 70)))
+smbhMass = 6.96*(10**34)
+objects_Spiral.append(definitions.MassiveObject(smbhMass, definitions.Position(0, 0), definitions.Velocity(0, 0), 8.54*(10**36), "Supermassive Black Hole", (0, 50, 70)))
 for i in range(0, numSpiralObjects):
     # random position with a bias toward the center, velocity tangent to the circle, random mass, color, size, and name
-    objects_Spiral.append(definitions.MassiveObject(random.uniform(1*(10**6), 1*(10**8)), definitions.Position(0, random.gauss(0, 5*(10**20))), definitions.Velocity(random.uniform(-3.5*(10**12), 3.5*(10**12)), 0), random.uniform(1*(10**22), 1*(10**28)), "Object " + str(i), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))))
-    
+    # random postion
+    def bivariateNormalPosition(standardDeviation):
+        xp = np.random.normal(0, standardDeviation, None)
+        yp = np.random.normal(0, standardDeviation, None)
+
+        positionVector = [xp, yp]
+        return positionVector
+    # velocity
+    def orbitalVelocity(standardDeviation, position):
+        xp = position[0]
+        yp = position[1]
+        radius = math.sqrt(xp*xp + yp*yp)
+
+        #no arctan adjustment
+        orbitalSpeed = math.sqrt(G*smbhMass/radius)*(2*math.pi)*math.atan(radius/standardDeviation)
+        #arctan adjustment
+        #orbitalSpeed = math.sqrt(G*smbhMass/radius)*(2*math.pi)*math.atan(radius/standardDeviation)
+
+        print(radius, orbitalSpeed)
+        print("Testing radius and orbital speed calculation")
+
+        xv = orbitalSpeed*(-yp / radius)
+        yv = orbitalSpeed*(xp / radius)
+
+        orbitalVelocityVector = [xv, yv]
+        return orbitalVelocityVector
+
+    standardDeviation = 1*10**11
+    positionVectori = bivariateNormalPosition(standardDeviation)
+    velocityVectori = orbitalVelocity(standardDeviation, positionVectori)
+
+    newObject = definitions.MassiveObject(1*10**7, definitions.Position(positionVectori[0], positionVectori[1]), definitions.Velocity(velocityVectori[0], velocityVectori[1]), 1*(10**25), "Object" + str(i), (255, 255, 255))
+    objects_Spiral.append(newObject)
+    # objects_Spiral.append(definitions.MassiveObject(random.uniform(1*(10**6), 1*(10**8)), definitions.Position(0, random.gauss(0, 5*(10**20))), definitions.Velocity(random.uniform(-3.5*(10**12), 3.5*(10**12)), 0), random.uniform(1*(10**22), 1*(10**28)), "Object " + str(i), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))))
