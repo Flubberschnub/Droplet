@@ -2,6 +2,8 @@ import math
 import constants
 import random
 import barneshut
+import numpy as np
+import scipy.integrate as spi
 
 
 ## 2D Vector Class
@@ -78,8 +80,8 @@ class Object:
     def accelerateToward(self, position, magnitude):
         angle = math.atan2(position.y - self.position.y, position.x - self.position.x)
         direction = (math.cos(angle), math.sin(angle))
-        self.velocity.x += (Acceleration(direction, magnitude) * constants.TIME).x
-        self.velocity.y += (Acceleration(direction, magnitude) * constants.TIME).y
+        self.velocity.x += (Acceleration(direction, magnitude) * constants.TIMESTEP).x
+        self.velocity.y += (Acceleration(direction, magnitude) * constants.TIMESTEP).y
     
     # Accelerate given a direction and magnitude
     def accelerate(self, direction, magnitude):
@@ -110,6 +112,12 @@ class MassiveObject(Object):
         super().update() # drift
         self.acceleration = accelerationFromForce #calc a_t+1
         self.velocity += (self.acceleration * (constants.TIMESTEP/2)) #kick
+
+    def naiveupdate(self, objects):
+        for obj in objects:
+            if obj != self:
+                obj.accelerateToward(self.position,(self.gravity(obj)/obj.mass))
+        super().update()
 
 
 

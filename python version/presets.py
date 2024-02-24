@@ -1,5 +1,6 @@
 import definitions
 import random
+import numpy as np
 
 ## trisolaris preset
 # Initial objects (for testing)
@@ -25,6 +26,7 @@ Neptune = definitions.MassiveObject(2.4622*(10**7), definitions.Position(4.503*(
 Pluto = definitions.MassiveObject(1.1883*(10**6), definitions.Position(5.906*(10**12), 0), definitions.Velocity(0, 4.67*(10**3)), 1.303*(10**22), "Pluto", (255, 255, 255))
 
 objects_Sol = [Sol, Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune, Pluto]
+# Suitable EpsilonL: 5000000000
 
 
 ## Three identical sun system
@@ -39,17 +41,18 @@ objects_Flennestra = [FlennestraA, FlennestraB, FlennestraC]
 ## Randomized system
 # Initial objects (for testing)
 objects_Random = []
-numRandomObjects = 200
+numRandomObjects = 100
 starProbability = 0.1
 for i in range(0, numRandomObjects):
     if random.random() < starProbability:
         # random position, velocity, mass, and name, color, and size
-        objects_Random.append(definitions.MassiveObject(random.uniform(1*(10**8), 1*(10**9)), definitions.Position(random.gauss(0, 3.5*(10**11.2)), random.gauss(0, 3.5*(10**11.2))), definitions.Velocity(random.uniform(-5000, 5000), random.uniform(-5000, 5000)), random.uniform(1*(10**28), 1*(10**30)), "Star " + str(i), (255, 255, 0)))
+        objects_Random.append(definitions.MassiveObject(random.uniform(1*(10**8), 1*(10**9)), definitions.Position(random.gauss(0, 3.5*(10**14)), random.gauss(0, 3.5*(10**14))), definitions.Velocity(random.uniform(-1000000, 1000000), random.uniform(-1000000, 1000000)), random.uniform(1*(10**28), 1*(10**30)), "Star " + str(i), (255, 255, 0)))
     else:
         # random position, velocity, mass, and name, color, and size
-        objects_Random.append(definitions.MassiveObject(random.uniform(1*(10**6), 1*(10**8)), definitions.Position(random.gauss(0, 3.5*(10**11.2)), random.gauss(0, 3.5*(10**11.2))), definitions.Velocity(random.uniform(-5000, 5000), random.uniform(-5000, 5000)), random.uniform(1*(10**22), 1*(10**26)), "Object " + str(i), (random.randint(0, 150), random.randint(0, 150), random.randint(0, 150))))
+        objects_Random.append(definitions.MassiveObject(random.uniform(1*(10**6), 1*(10**8)), definitions.Position(random.gauss(0, 3.5*(10**14)), random.gauss(0, 3.5*(10**14))), definitions.Velocity(random.uniform(-1000000, 1000000), random.uniform(-1000000, 1000000)), random.uniform(1*(10**22), 1*(10**26)), "Object " + str(i), (random.randint(0, 150), random.randint(0, 150), random.randint(0, 150))))
 # Supermassive black hole
-#objects_Random.append(definitions.MassiveObject(6.96*(10**8), definitions.Position(0, 0), definitions.Velocity(0, 0), 8.54*(10**36), "Supermassive Black Hole", (0, 50, 70)))
+objects_Random.append(definitions.MassiveObject(6.96*(10**8), definitions.Position(0, 0), definitions.Velocity(0, 0), 8.54*(10**36), "Supermassive Black Hole", (0, 50, 70)))
+# Suitable Epsilon: 5000000000000
 
 
 ## Spiral galaxy

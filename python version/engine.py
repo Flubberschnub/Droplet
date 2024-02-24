@@ -6,6 +6,8 @@ import definitions
 import barneshut
 import numpy as np
 from scipy.special import comb
+from multiprocessing import Process, Pool
+import os
 
 def smoothstep(x, x_min=0, x_max=1, N=1):
     x = np.clip((x - x_min) / (x_max - x_min), 0, 1)
@@ -25,6 +27,11 @@ global massDensity
 massDensity = 0
 
 global quadtree
+
+def updateObject(obj, quadtree):
+    for i in range(int(constants.TIME / constants.TIMESTEP)):
+        obj.update(quadtree)
+    return obj
 
 def tick():
     #This function is called every frame
@@ -48,6 +55,10 @@ def tick():
 
         for i in range(int(constants.TIME / constants.TIMESTEP)):
             obj.update(quadtree)
+
+
+
+            #obj.naiveupdate(objects)
         # Calculate average distance between particles and also mass density
         '''charLength = 0
         for obj2 in objects:
@@ -60,5 +71,5 @@ def tick():
 
     ## lesser epsilon is more accurate
     ## greater epsilon is more stable
-    constants.EPSILON = 50000000000#(math.sqrt(constants.TIME+1)) * (massDensity**0.9)
+    constants.EPSILON = 5000000000000#(math.sqrt(constants.TIME+1)) * (massDensity**0.9)
     constants.TIMESTEP = constants.TIME / 1

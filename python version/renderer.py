@@ -8,6 +8,11 @@ import constants
 import pyautogui
 import barneshut
 import preferences
+import random
+import definitions
+import barneshut
+from multiprocessing import Process, Pool
+import os
 
 FPS = 120
 SCALE = constants.SCALE
@@ -56,21 +61,39 @@ def drawQuad(quad):
 
 scroll = [0, 0]
 lockedObject = None
+
+# Main loop
 while True:
     clickPos = None
+    rightClickPos = None
     for event in pygame.event.get():
 
-        if event.type == pygame.MOUSEBUTTONUP:
-            clickPos = pygame.mouse.get_pos()
+        # Get mouse position on left click
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                clickPos = pygame.mouse.get_pos()
+        
+        # Get mouse position on right click
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 3:
+                rightClickPos = pygame.mouse.get_pos()
 
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+
     tick.tick()
+
     if lockedObject != None:
         scroll[0] = -(lockedObject.position.x*SCALE)
         scroll[1] = -(lockedObject.position.y*SCALE)
     canvas.fill((0, 0, 0))
+
+    # Right click button down to create a star
+    if rightClickPos != None:
+        engine.objects.append(definitions.MassiveObject(random.uniform(1*(10**8), 1*(10**9)), definitions.Position((pygame.mouse.get_pos()[0] - (screenSize[0]/2) - scroll[0])/SCALE, (pygame.mouse.get_pos()[1] - (screenSize[1]/2) - scroll[1])/SCALE), definitions.Velocity(random.uniform(-5000, 5000), random.uniform(-5000, 5000)), random.uniform(1*(10**28), 1*(10**30)), "Star " + str(len(engine.objects)), (255, 255, 0)))
+        engine.quadtree.insert(engine.objects[-1])
+        engine.quadtree.computeCenterOfMass()
 
     #Visualize Partitioning
     if preferences.visualizePartitioning:
