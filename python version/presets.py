@@ -16,6 +16,7 @@ objects_Trisolaris = [ACA, ACB, PC, TS]
 
 ## sol system preset
 # Initial objects (for testing)
+UYScuti = definitions.MassiveObject(1.7*(10**9), definitions.Position(0, 0), definitions.Velocity(0, 0), 1.9891*(10**30), "UY Scuti", (255, 70, 0))
 Sol = definitions.MassiveObject(6.96*(10**8), definitions.Position(0, 0), definitions.Velocity(0, 0), 1.9891*(10**30), "Sol", (255, 255, 0))
 Mercury = definitions.MassiveObject(2.4397*(10**6), definitions.Position(5.791*(10**10), 0), definitions.Velocity(0, 47.362*(10**3)), 3.3011*(10**23), "Mercury", (255, 255, 255))
 Venus = definitions.MassiveObject(6.0518*(10**6), definitions.Position(1.082*(10**11), 0), definitions.Velocity(0, 35.02*(10**3)), 4.8675*(10**24), "Venus", (255, 255, 255))

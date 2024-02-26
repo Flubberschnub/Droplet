@@ -16,7 +16,7 @@ import os
 
 FPS = 120
 SCALE = constants.SCALE
-scalefactor = 1
+scalefactor = preferences.displayScale
 
 currentTime = 0
 system_last_time = time.time()

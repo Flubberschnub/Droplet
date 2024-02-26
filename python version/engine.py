@@ -7,6 +7,7 @@ import barneshut
 import numpy as np
 from scipy.special import comb
 from multiprocessing import Process, Pool
+import preferences
 import os
 
 def smoothstep(x, x_min=0, x_max=1, N=1):
@@ -21,7 +22,7 @@ def smoothstep(x, x_min=0, x_max=1, N=1):
     return result
 
 # Initial objects (for testing)
-objects = presets.objects_Random
+objects = preferences.presetObjects
 
 global massDensity
 massDensity = 0
