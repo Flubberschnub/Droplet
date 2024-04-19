@@ -5,4 +5,4 @@ displayNames = False
 displayTrails = False
 displayObjects = True
 displayScale = 1
-presetObjects = presets.objects_Sol
+presetObjects = presets.GalaxyCollosion
