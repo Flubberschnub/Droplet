@@ -36,7 +36,7 @@ def updateObject(obj, quadtree):
 
 def tick():
     #This function is called every frame
-    
+
     # Create quadtree
     global quadtree
     # create quadtree root node based on the distance of the furthest objects
@@ -72,5 +72,5 @@ def tick():
 
     ## lesser epsilon is more accurate
     ## greater epsilon is more stable
-    constants.EPSILON = 5000000000000#(math.sqrt(constants.TIME+1)) * (massDensity**0.9)
+    constants.EPSILON = 500000000000#(math.sqrt(constants.TIME+1)) * (massDensity**0.9)
     constants.TIMESTEP = constants.TIME / 1
