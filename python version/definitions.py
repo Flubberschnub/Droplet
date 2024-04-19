@@ -11,10 +11,10 @@ class Vector:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-    
+
     def __add__(self, other):
         return type(self)(self.x + other.x, self.y + other.y)
-    
+
     def __sub__(self, other):
         return type(self)(self.x - other.x, self.y - other.y)
 
@@ -23,7 +23,7 @@ class Vector:
             return type(self)(self.x * other.x, self.y * other.y)
         else:
             return type(self)(self.x * other, self.y * other)
-        
+
     def normalized(self):
         # Convert to unit vector
         result = type(self)(self.x, self.y)
@@ -67,7 +67,7 @@ class Object:
         self.name = name
         self.color = color
         self.trail = Trail(self.position, self.size*2, (self.color[0], self.color[1], self.color[2]))
-    
+
     def update(self):
         #leapfrog integration
 
@@ -75,18 +75,26 @@ class Object:
 
         self.trail.position = self.position
         self.trail.update()
-    
+
     # Accelerate toward a position with a given magnitude
     def accelerateToward(self, position, magnitude):
         angle = math.atan2(position.y - self.position.y, position.x - self.position.x)
         direction = (math.cos(angle), math.sin(angle))
         self.velocity.x += (Acceleration(direction, magnitude) * constants.TIMESTEP).x
         self.velocity.y += (Acceleration(direction, magnitude) * constants.TIMESTEP).y
-    
+
     # Accelerate given a direction and magnitude
     def accelerate(self, direction, magnitude):
         self.velocity.x += (direction[0] * magnitude * constants.TIME)
         self.velocity.y += (direction[1] * magnitude * constants.TIME)
+
+    def translate(self, translation):
+        self.position.x += translation.x
+        self.position.y += translation.y
+
+    def netVelocity(self, netVelocity):
+        self.velocity.x += netVelocity.x
+        self.velocity.y += netVelocity.y
 
 ## Object subclass: massive object with point gravity
 class MassiveObject(Object):
@@ -98,7 +106,7 @@ class MassiveObject(Object):
     def gravity(self, obj):
         r = (obj.position - self.position).getMagnitude()
         return constants.G*self.mass*obj.mass/((r**2) + (constants.EPSILON**2))
-    
+
     def update(self, quadtree):
         '''for obj in objects:
             if obj != self:
@@ -106,7 +114,7 @@ class MassiveObject(Object):
         force = barneshut.getForce(self, quadtree)
         accelerationFromForce = Acceleration((force[0][0]*force[1])/self.mass, (force[0][1]*force[1])/self.mass)
         #self.accelerate(force[0], force[1]/self.mass)
-        
+
         # leapfrog integration
         self.velocity += (self.acceleration * (constants.TIMESTEP/2)) #kick
         super().update() # drift
@@ -120,7 +128,6 @@ class MassiveObject(Object):
         super().update()
 
 
-
 ## Trail Class: trail of an object
 class Trail:
     def __init__(self, pos, size, color=(255, 255, 255)):
@@ -129,7 +136,7 @@ class Trail:
         self.size = size
         self.length = self.size * 0.0000005
         self.trail = []
-    
+
     def update(self):
         self.trail.append(self.position)
         if len(self.trail) > self.length:

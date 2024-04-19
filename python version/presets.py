@@ -4,6 +4,81 @@ import math
 import numpy as np
 from constants import G
 
+#Generator Functions
+def createMassiveObject(size, position, velocity, mass, name, color):
+
+    thisPosition = definitions.Position(position[0], position[1])
+    thisVelocity = definitions.Velocity(velocity[0], velocity[1])
+    nameTag = definitions.MassiveObject(size, thisPosition, thisVelocity, mass, name, color)
+    return nameTag
+
+def translateListOfObjects(set, translation):
+    for obj in set:
+        definitions.Object.translate(obj, translation)
+
+def netVelocityOnObjects(set, velocityTranslation):
+    for obj in set:
+        definitions.Object.netVelocity(obj, velocityTranslation)
+
+def bivariateNormalPosition(standardDeviation):
+    xp = np.random.normal(0, standardDeviation, None)
+    yp = np.random.normal(0, standardDeviation, None)
+
+    positionVector = [xp, yp]
+    return positionVector
+
+def orbitalVelocity(spinClockwise, relativePosition, mass):
+    #spin Clockwise = 1  spin CounterClockwise -1
+    xp = relativePosition[0]
+    yp = relativePosition[1]
+
+    radius = math.sqrt(xp*xp + yp*yp)
+
+    orbitalSpeed = math.sqrt(G*mass/radius)
+
+    xv = orbitalSpeed*((-1)*(spinClockwise)*yp / radius)/10
+    yv = orbitalSpeed*((spinClockwise)*xp / radius)/10
+
+    orbitalVelocityVector = [xv, yv]
+    return orbitalVelocityVector
+
+def createSpiralGalaxy(spinClockwise, numSpiralObjects, smbhMass, smbhSize, smbhColor, objectsMass, objectsSize, objectsColor, radiusStandardDeviation):
+    #spin Clockwise = 1  spin CounterClockwise -1
+    objectsSpiralGalaxy = []
+    # Supermassive black hole
+    objectsSpiralGalaxy.append(definitions.MassiveObject(smbhSize, definitions.Position(0, 0), definitions.Velocity(0, 0), smbhMass, "Supermassive Black Hole", smbhColor))
+    for i in range(0, numSpiralObjects):
+        # random position with a bias toward the center, velocity tangent to the circle, random mass, color, size, and n
+
+        positionVectori = bivariateNormalPosition(radiusStandardDeviation)
+        velocityVectori = orbitalVelocity(spinClockwise, positionVectori, smbhMass)
+
+        newObject = definitions.MassiveObject(objectsSize, definitions.Position(positionVectori[0], positionVectori[1]), definitions.Velocity(velocityVectori[0], velocityVectori[1]), objectsMass, "Object" + str(i), smbhColor)
+        objectsSpiralGalaxy.append(newObject)
+    return objectsSpiralGalaxy
+
+
+# Example Testing
+objectsSpiralGalaxy1 = createSpiralGalaxy(-1, 100, 10**40, 10**10, (250,250,250), 10**25, 10**7, (255,255,255), 10**12)
+objectsSpiralGalaxy2 = createSpiralGalaxy(-1, 100, 10**40, 10**10, (250,250,250), 10**25, 10**7, (255,255,255), 10**12)
+
+translationChange1 = definitions.Vector(5*10**12, 10**12)
+translationChange2 = definitions.Vector(-5*10**12, -10**12)
+
+velocity1 = definitions.Vector(-10**7, 10**8)
+velocity2 = definitions.Vector(10**7, -10**8)
+
+translateListOfObjects(objectsSpiralGalaxy1, translationChange1)
+translateListOfObjects(objectsSpiralGalaxy2, translationChange2)
+
+netVelocityOnObjects(objectsSpiralGalaxy1, velocity1)
+netVelocityOnObjects(objectsSpiralGalaxy2, velocity2)
+
+GalaxyCollosion = objectsSpiralGalaxy1 + objectsSpiralGalaxy2
+
+
+
+
 ## trisolaris preset
 # Initial objects (for testing)
 # Randomized values
@@ -56,48 +131,3 @@ for i in range(0, numRandomObjects):
 # Supermassive black hole
 objects_Random.append(definitions.MassiveObject(6.96*(10**8), definitions.Position(0, 0), definitions.Velocity(0, 0), 8.54*(10**36), "Supermassive Black Hole", (0, 50, 70)))
 # Suitable Epsilon: 5000000000000
-
-
-## Spiral galaxy
-# Initial objects (for testing)
-objects_Spiral = []
-numSpiralObjects = 100
-# Supermassive black hole
-smbhMass = 6.96*(10**34)
-objects_Spiral.append(definitions.MassiveObject(smbhMass, definitions.Position(0, 0), definitions.Velocity(0, 0), 8.54*(10**36), "Supermassive Black Hole", (0, 50, 70)))
-for i in range(0, numSpiralObjects):
-    # random position with a bias toward the center, velocity tangent to the circle, random mass, color, size, and name
-    # random postion
-    def bivariateNormalPosition(standardDeviation):
-        xp = np.random.normal(0, standardDeviation, None)
-        yp = np.random.normal(0, standardDeviation, None)
-
-        positionVector = [xp, yp]
-        return positionVector
-    # velocity
-    def orbitalVelocity(standardDeviation, position):
-        xp = position[0]
-        yp = position[1]
-        radius = math.sqrt(xp*xp + yp*yp)
-
-        #no arctan adjustment
-        orbitalSpeed = math.sqrt(G*smbhMass/radius)*(2*math.pi)*math.atan(radius/standardDeviation)
-        #arctan adjustment
-        #orbitalSpeed = math.sqrt(G*smbhMass/radius)*(2*math.pi)*math.atan(radius/standardDeviation)
-
-        print(radius, orbitalSpeed)
-        print("Testing radius and orbital speed calculation")
-
-        xv = orbitalSpeed*(-yp / radius)
-        yv = orbitalSpeed*(xp / radius)
-
-        orbitalVelocityVector = [xv, yv]
-        return orbitalVelocityVector
-
-    standardDeviation = 1*10**11
-    positionVectori = bivariateNormalPosition(standardDeviation)
-    velocityVectori = orbitalVelocity(standardDeviation, positionVectori)
-
-    newObject = definitions.MassiveObject(1*10**7, definitions.Position(positionVectori[0], positionVectori[1]), definitions.Velocity(velocityVectori[0], velocityVectori[1]), 1*(10**25), "Object" + str(i), (255, 255, 255))
-    objects_Spiral.append(newObject)
-    # objects_Spiral.append(definitions.MassiveObject(random.uniform(1*(10**6), 1*(10**8)), definitions.Position(0, random.gauss(0, 5*(10**20))), definitions.Velocity(random.uniform(-3.5*(10**12), 3.5*(10**12)), 0), random.uniform(1*(10**22), 1*(10**28)), "Object " + str(i), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))))
