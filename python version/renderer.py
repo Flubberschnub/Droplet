@@ -72,7 +72,7 @@ while True:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 clickPos = pygame.mouse.get_pos()
-        
+
         # Get mouse position on right click
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 3:
@@ -194,6 +194,5 @@ while True:
     print(1/(time.time() - system_last_time))
     # display frames per second
     system_last_time = time.time()
-
 
 pygame.quit()

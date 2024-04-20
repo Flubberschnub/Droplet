@@ -17,17 +17,17 @@ import pandas as pd
 final = False
 
 # Name file
-fileName = 'testFinalOfGalaxyCollision'
+fileName = 'testFinalOfGalaxyCollision5000'
 objects = preferences.presetObjects
 
 # How many frames
-totalFrames = 360
+totalFrames = 60*20
 def totalFramesCalculation(fps, seconds):
     totalFrames = fps*seconds
 
 # TIME speed
-timeSpeed = 50
-constants.setTime(constants.TIME / timeSpeed)
+timeSpeed = 100
+constants.setTime(constants.TIME * timeSpeed)
 
 object_IDs = range(len(objects))
 tickIndices = range(totalFrames)
@@ -44,7 +44,7 @@ def storeTickData(tickIndex):
         animationData.loc[(tickIndex, objID), :] = data
         objID += 1
 
-for tickIndex in range(360):
+for tickIndex in range(totalFrames):
     storeTickData(tickIndex)
     tick.tick()
 
