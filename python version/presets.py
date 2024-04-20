@@ -36,8 +36,8 @@ def orbitalVelocity(spinClockwise, relativePosition, mass):
 
     orbitalSpeed = math.sqrt(G*mass/radius)
 
-    xv = orbitalSpeed*((-1)*(spinClockwise)*yp / radius)/10
-    yv = orbitalSpeed*((spinClockwise)*xp / radius)/10
+    xv = orbitalSpeed*((-1)*(spinClockwise)*yp / radius)
+    yv = orbitalSpeed*((spinClockwise)*xp / radius)
 
     orbitalVelocityVector = [xv, yv]
     return orbitalVelocityVector
