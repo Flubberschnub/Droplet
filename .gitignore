@@ -1,4 +1,7 @@
 python version/sph.py
 python version/__pycache__/
 sph.png
-animationFiles
+
+# Local Storage Folders for Testing
+testAnimations
+testMovies
