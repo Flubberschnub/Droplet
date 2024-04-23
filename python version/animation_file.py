@@ -13,50 +13,53 @@ import os
 
 import pandas as pd
 
-# Final animations will be stored on GitHub. Otherwise they will be stored on a local folder
-final = False
-
 # Name file
-fileName = 'testFinalOfGalaxyCollision5000'
-objects = preferences.presetObjects
+fileNameTest = 'testFinalOfGalaxyCollision5000'
+objectsTest = preferences.presetObjects
 
-# How many frames
-totalFrames = 60*20
+def speedUpTime(factor):
+    constants.setTime(constants.TIME * factor)
+
 def totalFramesCalculation(fps, seconds):
     totalFrames = fps*seconds
+    return totalFrames
 
-# TIME speed
-timeSpeed = 100
-constants.setTime(constants.TIME * timeSpeed)
-
-object_IDs = range(len(objects))
-tickIndices = range(totalFrames)
-
-# Data frame
-index = pd.MultiIndex.from_product([tickIndices, object_IDs], names=['Time Tick', 'Object ID'])
-
-animationData = pd.DataFrame(index=index, columns=['X Position', 'Y Position', 'Color', 'Size'])
-
-def storeTickData(tickIndex):
+def storeTickData(objects, tickIndex, dataTable):
     objID = 0
     for obj in objects:
         data = [obj.position.x, obj.position.y, obj.color, obj.size]
-        animationData.loc[(tickIndex, objID), :] = data
+        dataTable.loc[(tickIndex, objID), :] = data
         objID += 1
 
-for tickIndex in range(totalFrames):
-    storeTickData(tickIndex)
-    tick.tick()
+def saveAsCSV(data, fileName):
+    parent_dir = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
 
-parent_dir = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
+    data_folder = os.path.join(parent_dir, 'testAnimations')
 
-if final == True:
-    data_folder = os.path.join(parent_dir, 'finalAnimations')
-else:
-    data_folder = os.path.join(parent_dir, 'animationFiles')
+    os.makedirs(data_folder, exist_ok=True)
 
-os.makedirs(data_folder, exist_ok=True)
+    csv_file_path = os.path.join(data_folder, fileName+'.csv')
 
-csv_file_path = os.path.join(data_folder, fileName+'.csv')
+    data.to_csv(csv_file_path)
 
-animationData.to_csv(csv_file_path)
+def createAnimationData(objects, lengthInSeconds, timeSpeedFactor = 100, fps = 24, saveCSV = False, csvFileName = 'csvFile'):
+    # Set up given constants
+    totalFrames = totalFramesCalculation(fps, lengthInSeconds)
+    speedUpTime(timeSpeedFactor)
+    object_IDs = range(len(objects))
+    tickIndices = range(totalFrames)
+
+    # Data frame
+    index = pd.MultiIndex.from_product([tickIndices, object_IDs], names=['Time Tick', 'Object ID'])
+    animationData = pd.DataFrame(index=index, columns=['X Position', 'Y Position', 'Color', 'Size'])
+
+    # Run Engine and Store Data
+    for tickIndex in range(totalFrames):
+        storeTickData(objects, tickIndex, animationData)
+        tick.tick()
+
+    if saveCSV == True:
+        saveAsCSV(animationData, csvFileName)
+        print("CSV saved as " + csvFileName + " in testAnimations folder")
+
+    return animationData

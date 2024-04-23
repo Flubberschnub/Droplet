@@ -1,6 +1,7 @@
 
 import matplotlib.pyplot as plot
 from matplotlib.animation import FuncAnimation
+from matplotlib.animation import FFMpegWriter
 import pandas as pd
 import os
 
@@ -17,59 +18,77 @@ fps
 interpolation
 
 '''
-# Get Data
 
-# File Name
-fileName = 'testFinalOfGalaxyCollision5000'
+def inputPathFromName(fileName, final):
+    parent_dir = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
+    if final == False:
+        csv_folder_path = os.path.join(parent_dir, 'testAnimations')
+    else:
+        csv_folder_path = os.path.join(parent_dir, 'animations')
 
-parent_dir = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
-csv_folder_path = os.path.join(parent_dir, 'finalAnimations')
-csv_file_path = os.path.join(csv_folder_path, fileName+'.csv')
+    csv_file_path = os.path.join(csv_folder_path, fileName+'.csv')
+    return csv_file_path
 
+def setFrame(fixed, figure):
+    if fixed==True:
+        figure.set_xlim(-10**13, 10**13)
+        figure.set_ylim(-10**13, 10**13)
+    else:
+        #replace with varying frame
+        figure.set_xlim(-10**13, 10**13)
+        figure.set_ylim(-10**13, 10**13)
 
-animationData = pd.read_csv(csv_file_path)
-animationData.set_index(['Time Tick', 'Object ID'], inplace=True)
-
-largestindex = animationData.index.max()
-
-numberOfObjects = largestindex[1]+1
-totalFrames = largestindex[0]+1
-
-### Initalize plot
-
-fig, ax = plot.subplots()
-
-def init():
-    ax.set_xlim(-10**13, 10**13)
-    ax.set_ylim(-10**13, 10**13)
-    return []
-
-def xPositions(frame):
-    xList = []
+def listOfTraitAtTick(data, frame, numberOfObjects, traitIndex):
+    traitList = []
     for objID in range(numberOfObjects):
-        x = animationData.loc[(frame, objID)].iloc[0]
-        xList.append(x)
-    return xList
+        trait = data.loc[(frame, objID)].iloc[traitIndex]
+        traitList.append(trait)
+    return traitList
 
-def yPositions(frame):
-    yList = []
-    for objID in range(numberOfObjects):
-        y = animationData.loc[(frame, objID)].iloc[1]
-        yList.append(y)
-    return yList
+def dataFromCSV(inputFileName, final):
+    csv_file_path = inputPathFromName(inputFileName, final)
 
-def update(frame):
-    ax.clear()
-    ax.set_xlim(-10**13, 10**13)
-    ax.set_ylim(-10**13, 10**13)
+    # Set up MultiIndex datatable
+    data = pd.read_csv(csv_file_path)
+    data.set_index(['Time Tick', 'Object ID'], inplace=True)
 
-    x = xPositions(frame)
-    y = yPositions(frame)
-    print(x,y)
+    return data
 
-    ax.scatter(x, y)
-    return []
+def animationCreator(data = None, inputFileName = 'testName', fromCSV = False, showPlot = False, fixedFrame = True, final = False):
 
-ani = FuncAnimation(fig, update, frames=range(totalFrames), interval = 1, init_func = init, blit = True)
+    # Get Data
+    if fromCSV == True:
+        animationData = dataFromCSV(inputFileName, final)
+    else:
+        animationData = data
 
-plot.show()
+    largestindex = animationData.index.max()
+
+    numberOfObjects = largestindex[1]+1
+    totalFrames = largestindex[0]+1
+
+    ### Initalize plot
+
+    fig, ax = plot.subplots()
+
+    def init():
+        setFrame(fixedFrame, ax)
+        return []
+
+    def update(frame):
+        ax.clear()
+
+        setFrame(fixedFrame, ax)
+
+        x = listOfTraitAtTick(animationData, frame, numberOfObjects, 0)
+        y = listOfTraitAtTick(animationData, frame, numberOfObjects, 1)
+
+        ax.scatter(x, y)
+        return []
+
+    ani = FuncAnimation(fig, update, frames=range(totalFrames), interval = 1, init_func = init, blit = True, repeat = False)
+
+    if showPlot == True:
+        plot.show()
+
+    return ani
