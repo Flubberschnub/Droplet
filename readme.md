@@ -19,10 +19,10 @@ Droplet is a simple n-body gravitation simulator.
 - Adjustable fundamental constants
 - Barnes-Hut space partitioning
 - Leapfrog integration
+- Saving and replaying non-realtime simulations
 
 ## Planned Features
 - Better force-softening
 - Implement per-body force softening (using the Barnes-Hut tree and velocity)
 - Vectorization and Optimizations
 - Fleshed out runtime body creation
-- Implement relativistic time dilation (cause why not)
