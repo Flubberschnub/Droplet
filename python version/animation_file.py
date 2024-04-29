@@ -10,6 +10,7 @@ from scipy.special import comb
 from multiprocessing import Process, Pool
 import preferences
 import os
+import keyboard
 
 import pandas as pd
 
@@ -56,7 +57,19 @@ def createAnimationData(objects, lengthInSeconds, timeSpeedFactor = 100, fps = 2
     # Run Engine and Store Data
     for tickIndex in range(totalFrames):
         storeTickData(objects, tickIndex, animationData)
+        if tickIndex%(1+(totalFrames//1000)) == 0:
+            statement = f"{(tickIndex / totalFrames) * 100:.2f}% of frames created"
+            print (statement, end="\r")
         tick.tick()
+
+        if keyboard.is_pressed('space'):
+            #truncate animation
+            animationData = animationData.loc[animationData.index.get_level_values('Time Tick').isin(range(tickIndex))]
+            break
+            #return truncated_animationData
+
+
+    print("----Frame Data Done----")
 
     if saveCSV == True:
         saveAsCSV(animationData, csvFileName)

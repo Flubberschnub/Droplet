@@ -76,6 +76,7 @@ netVelocityOnObjects(objectsSpiralGalaxy2, velocity2)
 
 GalaxyCollosion = objectsSpiralGalaxy1 + objectsSpiralGalaxy2
 
+largeSpiralGalaxy = createSpiralGalaxy(-1, 2000, 10**40, 10**10, (250,250,250), 10**25, 10**7, (255,255,255), 10**12)
 
 
 

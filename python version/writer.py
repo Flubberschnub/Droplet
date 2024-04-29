@@ -15,9 +15,9 @@ def createPath(final, fileName, fileType):
 
     return movie_file_path
 
-def writer(animationFile, fileType = '.mp4', final = False, fileName = 'movieDefault'):
-    
-    writer = matplotlib.animation.FFMpegWriter(fps=24)
+def writer(animationFile, fileType = '.mp4', fps = 24, final = False, fileName = 'movieDefault'):
+
+    writer = matplotlib.animation.FFMpegWriter(fps = fps)
 
     movie_file_path = createPath(final, fileName, fileType)
 
