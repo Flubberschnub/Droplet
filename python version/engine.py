@@ -73,4 +73,4 @@ def tick():
     ## lesser epsilon is more accurate
     ## greater epsilon is more stable
     constants.EPSILON = 50000000000#(math.sqrt(constants.TIME+1)) * (massDensity**0.9)
-    constants.TIMESTEP = constants.TIME / 1
+    constants.TIMESTEP = constants.TIME / 5

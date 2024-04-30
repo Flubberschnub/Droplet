@@ -4,8 +4,7 @@ from matplotlib.animation import FuncAnimation
 from matplotlib.animation import FFMpegWriter
 import pandas as pd
 import os
-
-
+import numpy as np
 
 ### preferences
 '''
@@ -18,6 +17,7 @@ fps
 
 interpolation
 
+color is in RBG
 '''
 
 def inputPathFromName(fileName, final):
@@ -90,7 +90,10 @@ def animationCreator(data = None, inputFileName = 'testName', fromCSV = False, s
 
         x = listOfTraitAtTick(animationData, frame, numberOfObjects, 0)
         y = listOfTraitAtTick(animationData, frame, numberOfObjects, 1)
-        ax.scatter(x, y, color='white', s=1)
+        colors = np.array(listOfTraitAtTick(animationData, frame, numberOfObjects, 2))/255
+        size = np.array(listOfTraitAtTick(animationData, frame, numberOfObjects, 3))/(10**7)
+
+        ax.scatter(x, y, color=colors, s=size)
 
         #Progress Bar
         if frame%(1+(totalFrames//1000)) == 0:
